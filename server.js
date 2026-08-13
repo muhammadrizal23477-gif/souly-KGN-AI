@@ -203,10 +203,11 @@ app.post('/api/ai', requireAuth, async (req, res) => {
   ];
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000); // 25 detik, biar tidak nge-hang kalau provider lambat/mati
+  const timeout = setTimeout(() => controller.abort(), 30000); // 30 detik, biar tidak nge-hang kalau provider lambat/mati
 
+  let response;
   try {
-    const response = await fetch(AI_BASE_URL, {
+    response = await fetch(AI_BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -217,35 +218,82 @@ app.post('/api/ai', requireAuth, async (req, res) => {
         messages: chatMessages,
         max_tokens: 700,
         temperature: 0.9,
+        stream: true, // supaya jawaban dikirim bertahap (streaming), bukan sekaligus
       }),
       signal: controller.signal,
     });
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      const errText = await response.text().catch(() => '');
-      console.error('AI provider error:', response.status, errText);
-      // Diagnosa singkat untuk kasus paling umum, biar ketahuan tanpa buka Logs Render.
-      let hint = 'AI sedang bermasalah, coba lagi sebentar ya.';
-      if (response.status === 401 || response.status === 403) hint = 'API key AI ditolak provider (salah/kadaluarsa). Cek ulang AI_API_KEY di Render.';
-      else if (response.status === 404) hint = 'Model/endpoint AI tidak ditemukan. Cek ulang AI_MODEL dan AI_BASE_URL di Render.';
-      else if (response.status === 429) hint = 'Limit pemakaian AI gratis lagi penuh, tunggu sebentar atau ganti model.';
-      return res.status(502).json({ error: hint, providerStatus: response.status });
-    }
-
-    const data = await response.json();
-    const reply = data?.choices?.[0]?.message?.content
-      || data?.content?.[0]?.text
-      || 'Maaf, aku belum bisa jawab itu sekarang.';
-    res.json({ reply });
   } catch (err) {
     clearTimeout(timeout);
     console.error('AI proxy error:', err);
-    // Beda pesan untuk beda penyebab, supaya gampang didiagnosa dari sisi user juga.
     let msg = 'Gagal menghubungi AI, coba lagi ya.';
     if (err.name === 'AbortError') msg = 'AI kelamaan merespon (timeout), coba lagi ya.';
     else if (err.cause && err.cause.code === 'ENOTFOUND') msg = 'AI_BASE_URL tidak valid/tidak bisa dijangkau. Cek ulang di Environment Render.';
-    res.status(500).json({ error: msg, detail: String(err.message || err) });
+    return res.status(500).json({ error: msg, detail: String(err.message || err) });
+  }
+
+  if (!response.ok) {
+    clearTimeout(timeout);
+    const errText = await response.text().catch(() => '');
+    console.error('AI provider error:', response.status, errText);
+    // Diagnosa singkat untuk kasus paling umum, biar ketahuan tanpa buka Logs Render.
+    let hint = 'AI sedang bermasalah, coba lagi sebentar ya.';
+    if (response.status === 401 || response.status === 403) hint = 'API key AI ditolak provider (salah/kadaluarsa). Cek ulang AI_API_KEY di Render.';
+    else if (response.status === 404) hint = 'Model/endpoint AI tidak ditemukan. Cek ulang AI_MODEL dan AI_BASE_URL di Render.';
+    else if (response.status === 429) hint = 'Limit pemakaian AI gratis lagi penuh, tunggu sebentar atau ganti model.';
+    return res.status(502).json({ error: hint, providerStatus: response.status });
+  }
+
+  // Dari titik ini responsnya sudah pasti bisa di-stream ke client secara
+  // bertahap (SSE ringan: tiap event cuma berisi {delta:"..."} potongan teks).
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // cegah buffering di proxy (nginx dkk)
+  if (res.flushHeaders) res.flushHeaders();
+
+  try {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let gotAnyDelta = false;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const records = buffer.split('\n\n');
+      buffer = records.pop() || '';
+
+      for (const record of records) {
+        for (const rawLine of record.split('\n')) {
+          const line = rawLine.trim();
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let json;
+          try { json = JSON.parse(payload); } catch (e) { continue; }
+          const delta = json?.choices?.[0]?.delta?.content || '';
+          if (delta) {
+            gotAnyDelta = true;
+            res.write(`data: ${JSON.stringify({ delta })}\n\n`);
+          }
+        }
+      }
+    }
+    clearTimeout(timeout);
+    if (!gotAnyDelta) {
+      res.write(`data: ${JSON.stringify({ delta: 'Maaf, aku belum bisa jawab itu sekarang.' })}\n\n`);
+    }
+    res.write(`event: done\ndata: {}\n\n`);
+    res.end();
+  } catch (err) {
+    clearTimeout(timeout);
+    console.error('AI stream error:', err);
+    try {
+      const msg = err.name === 'AbortError' ? 'AI kelamaan merespon (timeout), coba lagi ya.' : 'Koneksi ke AI terputus di tengah jalan, coba lagi ya.';
+      res.write(`event: error\ndata: ${JSON.stringify({ error: msg })}\n\n`);
+    } catch (e2) { /* koneksi mungkin sudah putus, abaikan */ }
+    res.end();
   }
 });
 
