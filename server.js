@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000;
    tanpa ubah kode. WAJIB set AI_API_KEY di Render supaya AI bisa merespon. */
 const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1/chat/completions'';
 const AI_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versalite';
-const AI_API_KEY = process.env.AI_API_KEY || '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';
+const AI_API_KEY = process.env.AI_API_KEY || '';
 
 const app = express();
 
