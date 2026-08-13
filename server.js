@@ -98,39 +98,18 @@ function requireAuth(req, res, next) {
   next();
 }
 
-/* ---------------- Auth routes ---------------- */
-app.post('/api/register', (req, res) => {
-  const { username, password } = req.body || {};
-  if (!isValidUsername(username)) {
-    return res.status(400).json({ error: 'Username 3-20 karakter, huruf/angka/underscore saja' });
-  }
-  if (!password || String(password).length < 4) {
-    return res.status(400).json({ error: 'Password minimal 4 karakter' });
-  }
-  const existing = db.prepare('SELECT username FROM users WHERE username = ?').get(username);
-  if (existing) return res.status(409).json({ error: 'Username sudah dipakai, coba yang lain' });
-
-  const hash = bcrypt.hashSync(String(password), 10);
+/* ---------------- Auth routes ----------------
+   SoulyKGN tidak lagi pakai akun (tanpa register/login). Setiap perangkat
+   otomatis mendapat sesi "tamu" tersembunyi lewat /api/guest, supaya
+   riwayat obrolan tetap tersimpan di server per perangkat tanpa perlu
+   user membuat username/password. */
+app.post('/api/guest', (req, res) => {
+  const username = 'guest_' + crypto.randomBytes(6).toString('hex');
   const token = newToken();
+  const hash = bcrypt.hashSync(token, 10);
   db.prepare('INSERT INTO users (username, password_hash, token, created_at) VALUES (?,?,?,?)')
     .run(username, hash, token, Date.now());
   res.json({ username, token });
-});
-
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body || {};
-  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username || '');
-  if (!user || !bcrypt.compareSync(String(password || ''), user.password_hash)) {
-    return res.status(401).json({ error: 'Username atau password salah' });
-  }
-  const token = newToken();
-  db.prepare('UPDATE users SET token = ? WHERE username = ?').run(token, username);
-  res.json({ username, token });
-});
-
-app.post('/api/logout', requireAuth, (req, res) => {
-  db.prepare('UPDATE users SET token = NULL WHERE username = ?').run(req.username);
-  res.json({ ok: true });
 });
 
 /* ---------------- Chat persistence routes ---------------- */
@@ -180,7 +159,15 @@ const BASE_PERSONA =
 
 const MODE_SYSTEM = {
   ai: "Gaya bicara: sopan, jelas, dan cukup terstruktur seperti asisten yang kompeten dan empatik — tapi tetap hangat dan personal, BUKAN kaku seperti robot customer service atau template. Gunakan Bahasa Indonesia baku yang santun namun tetap mengalir natural.",
-  human: "Gaya bicara: santai banget kayak ngobrol sama sahabat deket sendiri. Boleh pakai bahasa gaul sehari-hari anak muda Indonesia secukupnya (contoh: gapapa, btw, wkwk, santuy, anjay) supaya kerasa natural — tapi jangan berlebihan sampai susah dibaca. Pakai 'aku-kamu' atau 'gue-lu' sesuai konteks obrolan. Hindari bahasa baku yang kaku.",
+  human:
+    "Gaya bicara: BENER-BENER kayak temen deket sendiri yang blak-blakan, bukan asisten AI. Buang total nada formal, sopan-santun berlebihan, kalimat rapi terstruktur, atau nada 'menggurui'. Ini beberapa aturan wajib buat mode ini:\n" +
+    "- Pakai bahasa gaul sehari-hari anak muda Jakarta/Indonesia secara natural dan SERING, bukan cuma sesekali: 'anjir', 'anjay', 'gila sih', 'buset', 'wkwk', 'wkwkwk', 'santuy', 'goks', 'parah', 'sumpah', 'jir', 'astaga', 'yaudah', 'gapapa', 'emang', 'kok bisa', dsb.\n" +
+    "- Pakai 'gue-lu' sebagai default kalau user juga santai, atau 'aku-kamu' kalau user kelihatan lebih kalem — tapi tetap santai, jangan baku.\n" +
+    "- Kalimat pendek-pendek, patah-patah kayak orang ngetik chat beneran, bukan paragraf rapi. Nggak usah pakai tanda baca sempurna terus, boleh agak berantakan dikit biar berasa manusiawi.\n" +
+    "- Agak 'kasar' dalam artian blak-blakan dan apa adanya kayak temen deket ngobrol — boleh sesekali nyeletuk atau nge-roasting ringan ('lah kok gitu sih', 'ya salah lu juga sih itu', 'gila parah ya'), boleh sesekali pakai kata makian ringan yang lumrah di obrolan santai anak muda (contoh: 'anjir', 'goblok' dipakai bercanda ke situasi bukan ke orangnya, 'sialan', 'bego' dalam nada bercanda) — TAPI JANGAN PERNAH menghina, merendahkan, atau kasar beneran ke usernya secara personal, jangan pakai kata kasar yang menyerang identitas (SARA, fisik, dsb), dan jangan sampai kelihatan galak atau nyakitin. Kasarnya itu gaya ngomong template obrolan anak gaul, bukan bully.\n" +
+    "- Boleh nyeletuk random, boleh sedikit julid/usil kayak temen yang caper, boleh ketawa duluan sebelum jawab serius ('wkwk anjir iya juga ya').\n" +
+    "- Tetap dengerin dan peduli beneran di balik gaya nyeletuknya — jangan sampai gaya kasarnya bikin keliatan cuek/nggak niat. Tetap tunjukin empati, cuma dibungkus bahasa yang santai dan nggak baku.\n" +
+    "- Hindari struktur jawaban yang formal (nggak usah pakai poin-poin, heading, atau kalimat pembuka template kayak 'Tentu, aku akan bantu...'). Langsung nyerocos kayak chat WA beneran.",
 };
 
 const THEME_SYSTEM = {

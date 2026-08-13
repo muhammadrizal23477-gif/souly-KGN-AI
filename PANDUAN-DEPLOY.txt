@@ -3,8 +3,8 @@
 ====================================================
 
 Aplikasi ini sekarang sudah full server + database, artinya:
-- Chat sebelumnya TERSIMPAN PERMANEN per akun (bukan cuma di 1 browser)
-- Bisa dipakai BANYAK PENGGUNA sekaligus (tiap orang daftar akun sendiri)
+- Chat TERSIMPAN OTOMATIS per perangkat (tanpa perlu bikin akun/login)
+- Bisa dipakai BANYAK PENGGUNA sekaligus, tiap perangkat dapat sesi tamu sendiri
 - API key AI disimpan aman di server, tidak kelihatan di browser siapa pun
 
 ----------------------------------------------------
@@ -88,8 +88,8 @@ LANGKAH 3 — Deploy di Render
    AI_MODEL     = llama-3.3-70b-versatile
 
 6. Klik "Create Web Service" → tunggu 2-5 menit sampai build selesai
-7. Dapat alamat seperti https://soulykgn.onrender.com — buka, coba daftar
-   akun, dan mulai chat!
+7. Dapat alamat seperti https://soulykgn.onrender.com — buka dan langsung
+   bisa chat, tanpa perlu daftar/login akun!
 
 ----------------------------------------------------
 DIMANA MEMASANG API KEY?
@@ -107,18 +107,22 @@ bernama ".env" di folder ini isinya:
   AI_API_KEY=gsk_xxxxxxxxxxxxxxxx
 
 ----------------------------------------------------
-SUPAYA AKUN TIDAK TER-RESET OTOMATIS (Database permanen)
+SUPAYA RIWAYAT TIDAK TER-RESET OTOMATIS (Database permanen)
 ----------------------------------------------------
-Server sudah pakai database SQLite (better-sqlite3) sehingga akun &
+Server sudah pakai database SQLite (better-sqlite3) sehingga sesi tamu &
 riwayat chat otomatis tersimpan permanen — TIDAK hilang saat server
-"tidur"/bangun lagi atau restart biasa.
+"tidur"/bangun lagi atau restart biasa. Tidak ada akun/password; setiap
+perangkat otomatis dapat ID tamu tersembunyi (disimpan di localStorage
+browser) yang menghubungkan riwayat chat ke perangkat itu.
 
-Akun baru kelihatan "ke-reset" kalau kamu melakukan REDEPLOY DARI NOL
+Riwayat baru kelihatan "ke-reset" kalau kamu melakukan REDEPLOY DARI NOL
 di paket Free Render (misalnya rebuild ulang service), karena paket
 Free tidak punya disk permanen — folder project (termasuk file
-soulykgn.db) dibuat ulang dari kosong setiap redeploy total.
+soulykgn.db) dibuat ulang dari kosong setiap redeploy total. Riwayat
+juga akan hilang kalau user membersihkan data browser/localStorage,
+karena itu satu-satunya penanda sesi tamu di perangkat mereka.
 
-Cara membuat data akun 100% permanen walau redeploy total:
+Cara membuat data riwayat 100% permanen walau redeploy total:
   1. Render Dashboard → pilih service ini → tab "Disks" → "Add Disk"
      (fitur ini perlu instance berbayar, mulai ~$7/bulan)
      - Mount Path, isi misalnya: /var/data
@@ -127,20 +131,20 @@ Cara membuat data akun 100% permanen walau redeploy total:
   3. "Manual Deploy" untuk redeploy ulang.
 
 Setelah itu database disimpan di disk permanen (bukan di folder
-project), jadi akun dan chat aman walau redeploy dari nol. Kalau
+project), jadi riwayat chat aman walau redeploy dari nol. Kalau
 env var DB_PATH tidak diisi, server tetap otomatis pakai
 soulykgn.db di folder project (cukup untuk pemakaian normal /
 sehari-hari, hanya berisiko saat redeploy total di paket Free).
 
 ----------------------------------------------------
-VIDEO INTRO SETELAH LOGIN
+VIDEO INTRO SETIAP MASUK APLIKASI
 ----------------------------------------------------
 Sudah ditambahkan file app/intro.mp4 (rasio 9:16, tanpa watermark).
-Video ini otomatis diputar sekali setiap user berhasil login/daftar
-akun baru, sebelum masuk ke halaman chat. User juga bisa menekan
-tombol "Lewati" di pojok kanan bawah untuk skip. Kalau mau ganti
-videonya, tinggal timpa file app/intro.mp4 dengan video lain
-(disarankan rasio 9:16 juga, format .mp4).
+Video ini otomatis diputar setiap kali user membuka/memuat ulang
+aplikasi (bukan cuma sekali di awal), sebelum masuk ke halaman chat.
+User juga bisa menekan tombol "Lewati" di pojok kanan bawah untuk skip.
+Kalau mau ganti videonya, tinggal timpa file app/intro.mp4 dengan video
+lain (disarankan rasio 9:16 juga, format .mp4).
 
 ----------------------------------------------------
 CATATAN PENTING (paket Free Render)
@@ -152,15 +156,15 @@ CATATAN PENTING (paket Free Render)
   pada dashboard Render, lalu klik "Manual Deploy" untuk redeploy.
 
 ----------------------------------------------------
-KENAPA MUNCUL "Failed to fetch" SAAT DAFTAR/LOGIN?
+KENAPA MUNCUL "Failed to fetch" SAAT MEMBUKA APLIKASI?
 ----------------------------------------------------
 Pesan itu artinya browser SAMA SEKALI tidak berhasil menghubungi
-server (bukan error dari akun/password kamu). Penyebab paling umum:
+server. Penyebab paling umum:
 
 1. Kamu membuka file index.html langsung dari komputer (double klik
    file, alamatnya jadi "file:///C:/.../index.html").
    → INI TIDAK AKAN PERNAH BISA, karena halaman butuh server Express
-     yang jalan (server.js) untuk endpoint /api/register, /api/login, dst.
+     yang jalan (server.js) untuk endpoint /api/guest, /api/chats, dst.
    → Solusi: jalankan server dulu (lokal: "node server.js" lalu buka
      http://localhost:3000 di browser) ATAU akses lewat alamat Render
      kamu (https://nama-app-kamu.onrender.com).
