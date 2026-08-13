@@ -17,8 +17,8 @@ const PORT = process.env.PORT || 3000;
 /* Konfigurasi provider AI — default pakai Groq (gratis, cepat, kompatibel format OpenAI).
    Bisa diganti ke provider OpenAI-compatible lain (mis. OpenRouter) hanya lewat env var,
    tanpa ubah kode. WAJIB set AI_API_KEY di Render supaya AI bisa merespon. */
-const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1/chat/completions'';
-const AI_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versalite';
+const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1/chat/completions';
+const AI_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versatile';
 const AI_API_KEY = process.env.AI_API_KEY || '';
 
 const app = express();
