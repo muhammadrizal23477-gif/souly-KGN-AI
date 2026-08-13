@@ -1,0 +1,17 @@
+{
+  "name": "soulykgn-server",
+  "version": "1.0.0",
+  "description": "SoulyKGN - AI companion chat (kangen, excited, luapkan rasa, motivasi) - server + database, siap deploy ke Render",
+  "main": "server.js",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "better-sqlite3": "^11.3.0",
+    "bcryptjs": "^2.4.3"
+  }
+}
