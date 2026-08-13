@@ -1,0 +1,188 @@
+====================================================
+ SOULYKGN — PANDUAN DEPLOY KE RENDER (GRATIS)
+====================================================
+
+Aplikasi ini sekarang sudah full server + database, artinya:
+- Chat sebelumnya TERSIMPAN PERMANEN per akun (bukan cuma di 1 browser)
+- Bisa dipakai BANYAK PENGGUNA sekaligus (tiap orang daftar akun sendiri)
+- API key AI disimpan aman di server, tidak kelihatan di browser siapa pun
+
+----------------------------------------------------
+LANGKAH 1 — Ambil API key AI gratis (Groq)
+----------------------------------------------------
+1. Buka https://console.groq.com
+2. Daftar / login (bisa pakai akun Google)
+3. Masuk menu "API Keys" → klik "Create API Key"
+4. Copy API key-nya (bentuknya "gsk_....") — simpan dulu, dipakai di Langkah 3
+
+Groq gratis, cepat, dan modelnya (Llama 3.3 70B) sudah lancar berbahasa
+Indonesia. Kalau nanti mau ganti provider lain yang formatnya sama
+(OpenAI-compatible) seperti OpenRouter, tinggal ganti 2 env variable di
+Langkah 3 tanpa ubah kode sama sekali.
+
+----------------------------------------------------
+CARA DAPAT AI_BASE_URL & AI_MODEL GRATIS (opsi lengkap)
+----------------------------------------------------
+Server ini bisa pakai provider AI mana pun asal formatnya
+"OpenAI-compatible". Dua pilihan gratis paling gampang:
+
+OPSI A — Groq (paling direkomendasikan, cepat & gratis)
+  1. Buka https://console.groq.com → daftar/login (bisa pakai Google)
+  2. Menu "API Keys" (sidebar kiri) → "Create API Key" → kasih nama
+     bebas → Submit → COPY key-nya (diawali "gsk_...", cuma muncul
+     sekali, langsung simpan)
+  3. Set di Render → Environment:
+       AI_API_KEY  = gsk_xxxxxxxxxxxxxxxx
+       AI_BASE_URL = https://api.groq.com/openai/v1/chat/completions
+       AI_MODEL    = llama-3.3-70b-versatile
+     (dua baris terakhir sudah jadi DEFAULT di server.js, jadi kalau
+     tidak diisi pun otomatis pakai ini — cukup isi AI_API_KEY saja)
+  Model gratis lain di Groq: "llama-3.1-8b-instant" (lebih ringan/cepat),
+  "gemma2-9b-it". Cek daftar & limit terbaru di
+  https://console.groq.com/docs/models
+
+OPSI B — OpenRouter (banyak pilihan model gratis)
+  1. Buka https://openrouter.ai → daftar/login
+  2. Menu "Keys" → "Create Key" → copy key-nya (diawali "sk-or-...")
+  3. Buka https://openrouter.ai/models → filter/cari model berlabel
+     ":free" (contoh: "meta-llama/llama-3.1-8b-instruct:free",
+     "google/gemma-2-9b-it:free" — daftar model gratis berubah-ubah,
+     cek yang masih tersedia saat ini)
+  4. Set di Render → Environment:
+       AI_API_KEY  = sk-or-xxxxxxxxxxxxxxxx
+       AI_BASE_URL = https://openrouter.ai/api/v1/chat/completions
+       AI_MODEL    = (nama model ":free" pilihanmu)
+
+Catatan: model gratis biasanya ada limit request per menit/hari. Kalau
+muncul error 429/rate limit, tunggu sebentar atau ganti ke model
+":free" lain.
+
+----------------------------------------------------
+LANGKAH 2 — Upload project ke GitHub
+----------------------------------------------------
+1. Buat repository baru di GitHub (boleh private)
+2. Upload SEMUA isi folder ini (server.js, package.json, folder app/)
+   persis strukturnya:
+     server.js
+     package.json
+     app/
+       index.html
+       logo.png
+
+----------------------------------------------------
+LANGKAH 3 — Deploy di Render
+----------------------------------------------------
+1. Buka https://render.com → login/daftar
+2. Klik "New" → "Web Service"
+3. Pilih repo GitHub yang barusan dibuat
+4. Isi setting:
+   - Build Command : npm install
+   - Start Command : node server.js
+   - Instance Type : Free
+5. Scroll ke bagian "Environment Variables" → tambahkan:
+
+   AI_API_KEY   = (paste API key Groq dari Langkah 1)
+
+   (opsional, biasanya tidak perlu diubah — sudah ada default-nya)
+   AI_BASE_URL  = https://api.groq.com/openai/v1/chat/completions
+   AI_MODEL     = llama-3.3-70b-versatile
+
+6. Klik "Create Web Service" → tunggu 2-5 menit sampai build selesai
+7. Dapat alamat seperti https://soulykgn.onrender.com — buka, coba daftar
+   akun, dan mulai chat!
+
+----------------------------------------------------
+DIMANA MEMASANG API KEY?
+----------------------------------------------------
+API key TIDAK ditaruh di dalam kode (server.js/index.html), tapi lewat
+Environment Variable di dashboard Render, supaya aman dan tidak
+kelihatan siapa pun di browser:
+
+  Render Dashboard → pilih service ini → tab "Environment"
+  → "Add Environment Variable" → Key: AI_API_KEY, Value: (API key kamu)
+  → Save Changes (otomatis redeploy)
+
+Kalau jalan di komputer sendiri (lokal, bukan Render), buat file
+bernama ".env" di folder ini isinya:
+  AI_API_KEY=gsk_xxxxxxxxxxxxxxxx
+
+----------------------------------------------------
+SUPAYA AKUN TIDAK TER-RESET OTOMATIS (Database permanen)
+----------------------------------------------------
+Server sudah pakai database SQLite (better-sqlite3) sehingga akun &
+riwayat chat otomatis tersimpan permanen — TIDAK hilang saat server
+"tidur"/bangun lagi atau restart biasa.
+
+Akun baru kelihatan "ke-reset" kalau kamu melakukan REDEPLOY DARI NOL
+di paket Free Render (misalnya rebuild ulang service), karena paket
+Free tidak punya disk permanen — folder project (termasuk file
+soulykgn.db) dibuat ulang dari kosong setiap redeploy total.
+
+Cara membuat data akun 100% permanen walau redeploy total:
+  1. Render Dashboard → pilih service ini → tab "Disks" → "Add Disk"
+     (fitur ini perlu instance berbayar, mulai ~$7/bulan)
+     - Mount Path, isi misalnya: /var/data
+  2. Tab "Environment" → tambahkan variable:
+       DB_PATH = /var/data/soulykgn.db
+  3. "Manual Deploy" untuk redeploy ulang.
+
+Setelah itu database disimpan di disk permanen (bukan di folder
+project), jadi akun dan chat aman walau redeploy dari nol. Kalau
+env var DB_PATH tidak diisi, server tetap otomatis pakai
+soulykgn.db di folder project (cukup untuk pemakaian normal /
+sehari-hari, hanya berisiko saat redeploy total di paket Free).
+
+----------------------------------------------------
+VIDEO INTRO SETELAH LOGIN
+----------------------------------------------------
+Sudah ditambahkan file app/intro.mp4 (rasio 9:16, tanpa watermark).
+Video ini otomatis diputar sekali setiap user berhasil login/daftar
+akun baru, sebelum masuk ke halaman chat. User juga bisa menekan
+tombol "Lewati" di pojok kanan bawah untuk skip. Kalau mau ganti
+videonya, tinggal timpa file app/intro.mp4 dengan video lain
+(disarankan rasio 9:16 juga, format .mp4).
+
+----------------------------------------------------
+CATATAN PENTING (paket Free Render)
+----------------------------------------------------
+- Server "tidur" kalau tidak diakses ±15 menit, nanti butuh 30-60 detik
+  buat bangun lagi saat ada yang buka — ini normal, bukan error.
+- Kalau di halaman muncul pesan "AI_API_KEY belum diatur di server",
+  berarti belum di-set dengan benar — cek lagi di tab "Environment"
+  pada dashboard Render, lalu klik "Manual Deploy" untuk redeploy.
+
+----------------------------------------------------
+KENAPA MUNCUL "Failed to fetch" SAAT DAFTAR/LOGIN?
+----------------------------------------------------
+Pesan itu artinya browser SAMA SEKALI tidak berhasil menghubungi
+server (bukan error dari akun/password kamu). Penyebab paling umum:
+
+1. Kamu membuka file index.html langsung dari komputer (double klik
+   file, alamatnya jadi "file:///C:/.../index.html").
+   → INI TIDAK AKAN PERNAH BISA, karena halaman butuh server Express
+     yang jalan (server.js) untuk endpoint /api/register, /api/login, dst.
+   → Solusi: jalankan server dulu (lokal: "node server.js" lalu buka
+     http://localhost:3000 di browser) ATAU akses lewat alamat Render
+     kamu (https://nama-app-kamu.onrender.com).
+
+2. Server di Render belum jalan / masih "bangun tidur".
+   → Paket Free tidur setelah ±15 menit tidak diakses, butuh 30-60 detik
+     untuk bangun lagi saat pertama kali dibuka. Coba refresh setelah
+     ~1 menit.
+
+3. Deploy belum selesai / gagal build.
+   → Cek tab "Logs" di Render, pastikan muncul tulisan
+     "SoulyKGN server berjalan di port ...". Kalau ada error merah,
+     kemungkinan Build Command belum "npm install".
+
+4. Kamu mengakses lewat alamat yang salah / dua origin berbeda.
+   → Server sekarang sudah ditambahkan header CORS agar tetap bisa
+     terhubung, tapi cara paling aman tetap buka LANGSUNG alamat
+     Render kamu (satu alamat itu saja untuk semuanya).
+
+Cara mengecek dengan pasti: buka alamat kamu + "/health" di browser,
+misalnya https://nama-app-kamu.onrender.com/health — kalau muncul
+JSON seperti {"ok":true,...} berarti server hidup dan masalahnya ada
+di alamat/origin yang kamu buka. Kalau halaman itu error/tidak kebuka,
+berarti server belum jalan (cek Logs di Render).
+

@@ -17,9 +17,9 @@ const PORT = process.env.PORT || 3000;
 /* Konfigurasi provider AI — default pakai Groq (gratis, cepat, kompatibel format OpenAI).
    Bisa diganti ke provider OpenAI-compatible lain (mis. OpenRouter) hanya lewat env var,
    tanpa ubah kode. WAJIB set AI_API_KEY di Render supaya AI bisa merespon. */
-const AI_BASE_URL = process.env.AI_BASE_URL || 'https://openrouter.ai/workspaces/default/keys/efd2b1cc0f51497e1b64b6366ccdae7927c986f9206827a975e194ff38b53b21';
-const AI_MODEL = process.env.AI_MODEL || 'Qwen3Reranker8B';
-const AI_API_KEY = process.env.AI_API_KEY || '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';
+const AI_BASE_URL = process.env.AI_BASE_URL || 'https://api.groq.com/openai/v1/chat/completions';
+const AI_MODEL = process.env.AI_MODEL || 'llama-3.3-70b-versatile';
+const AI_API_KEY = process.env.AI_API_KEY || '';
 
 const app = express();
 
@@ -215,6 +215,9 @@ app.post('/api/ai', requireAuth, async (req, res) => {
     })),
   ];
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000); // 25 detik, biar tidak nge-hang kalau provider lambat/mati
+
   try {
     const response = await fetch(AI_BASE_URL, {
       method: 'POST',
@@ -228,12 +231,19 @@ app.post('/api/ai', requireAuth, async (req, res) => {
         max_tokens: 700,
         temperature: 0.9,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
       console.error('AI provider error:', response.status, errText);
-      return res.status(502).json({ error: 'AI sedang bermasalah, coba lagi sebentar ya.' });
+      // Diagnosa singkat untuk kasus paling umum, biar ketahuan tanpa buka Logs Render.
+      let hint = 'AI sedang bermasalah, coba lagi sebentar ya.';
+      if (response.status === 401 || response.status === 403) hint = 'API key AI ditolak provider (salah/kadaluarsa). Cek ulang AI_API_KEY di Render.';
+      else if (response.status === 404) hint = 'Model/endpoint AI tidak ditemukan. Cek ulang AI_MODEL dan AI_BASE_URL di Render.';
+      else if (response.status === 429) hint = 'Limit pemakaian AI gratis lagi penuh, tunggu sebentar atau ganti model.';
+      return res.status(502).json({ error: hint, providerStatus: response.status });
     }
 
     const data = await response.json();
@@ -242,8 +252,13 @@ app.post('/api/ai', requireAuth, async (req, res) => {
       || 'Maaf, aku belum bisa jawab itu sekarang.';
     res.json({ reply });
   } catch (err) {
+    clearTimeout(timeout);
     console.error('AI proxy error:', err);
-    res.status(500).json({ error: 'Gagal menghubungi AI, coba lagi ya.' });
+    // Beda pesan untuk beda penyebab, supaya gampang didiagnosa dari sisi user juga.
+    let msg = 'Gagal menghubungi AI, coba lagi ya.';
+    if (err.name === 'AbortError') msg = 'AI kelamaan merespon (timeout), coba lagi ya.';
+    else if (err.cause && err.cause.code === 'ENOTFOUND') msg = 'AI_BASE_URL tidak valid/tidak bisa dijangkau. Cek ulang di Environment Render.';
+    res.status(500).json({ error: msg, detail: String(err.message || err) });
   }
 });
 
