@@ -88,18 +88,38 @@ input,textarea{ font-family:inherit; }
 .souly-mode-btn small{ font-size:9.5px; font-weight:500; opacity:0.75; }
 .souly-mode-btn.active{ background:linear-gradient(135deg,#2F8CFF,#1E63C4); color:#fff; box-shadow:0 4px 14px rgba(47,140,255,0.35); }
 
+.souly-newchat-btn{
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+  padding:11px 10px; border-radius:13px; font-size:13px; font-weight:700; color:#fff;
+  background:linear-gradient(135deg,#2F8CFF,#1E63C4); box-shadow:0 8px 18px -8px rgba(47,140,255,0.6);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.souly-newchat-btn:hover{ transform:translateY(-1px); box-shadow:0 10px 22px -8px rgba(47,140,255,0.7); }
+.souly-newchat-btn:active{ transform:translateY(0); }
+
 .souly-section-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); padding:2px 2px 0; }
 .souly-history-label{ margin-top:4px; padding-top:10px; border-top:1px solid var(--line); display:flex; }
 
 .souly-theme-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .souly-theme-card{
-  display:flex; align-items:center; gap:7px; padding:11px 10px; border-radius:12px;
-  background:var(--panel-alt); border:1px solid var(--line); color:var(--text);
-  font-size:12.5px; font-weight:600; text-align:left; transition:all .15s ease;
+  display:flex; flex-direction:column; align-items:flex-start; gap:9px; padding:13px 12px 12px; border-radius:14px;
+  background:linear-gradient(160deg, var(--panel-alt), rgba(255,255,255,0.015)); border:1px solid var(--line); color:var(--text);
+  font-size:12.5px; font-weight:600; text-align:left; transition:all .15s ease; position:relative; overflow:hidden;
 }
-.souly-theme-card .ic{ color:var(--accent); flex-shrink:0; font-size:15px; }
-.souly-theme-card:hover{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset, 0 6px 16px -6px var(--accent); transform:translateY(-1px); }
-.souly-theme-card.wide{ grid-column:1 / -1; justify-content:center; background:linear-gradient(135deg, rgba(47,140,255,0.14), rgba(47,140,255,0.03)); }
+.souly-theme-card .card-label{ font-size:12.5px; font-weight:700; line-height:1.2; }
+.souly-theme-card .card-desc{ font-size:10.5px; font-weight:500; color:var(--text-soft); line-height:1.3; margin-top:1px; }
+.souly-theme-card:hover{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset, 0 10px 20px -10px var(--accent); transform:translateY(-1px); }
+.souly-theme-card.wide{
+  grid-column:1 / -1; flex-direction:row; align-items:center; justify-content:flex-start;
+  background:linear-gradient(135deg, rgba(47,140,255,0.16), rgba(47,140,255,0.03));
+}
+.souly-theme-card.wide .card-text{ display:flex; flex-direction:column; }
+
+.ic-badge{
+  display:flex; align-items:center; justify-content:center; border-radius:10px; flex-shrink:0;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+.souly-svg-icon{ display:block; }
 
 .souly-history{ display:flex; flex-direction:column; gap:4px; flex:1; min-height:0; }
 .souly-history-empty{ font-size:12px; color:var(--text-soft); padding:10px 4px; line-height:1.5; }
@@ -109,7 +129,7 @@ input,textarea{ font-family:inherit; }
 }
 .souly-history-item:hover{ background:var(--panel-alt); color:var(--text); }
 .souly-history-item.active{ background:var(--panel-alt); color:var(--text); box-shadow:inset 3px 0 0 var(--accent); }
-.souly-history-icon{ color:var(--accent); flex-shrink:0; font-size:13px; }
+.souly-history-icon{ color:var(--accent); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
 .souly-history-title{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .souly-history-del{ opacity:0; color:var(--text-soft); padding:4px; border-radius:6px; font-size:12px; }
 .souly-history-item:hover .souly-history-del{ opacity:1; }
@@ -121,6 +141,12 @@ input,textarea{ font-family:inherit; }
   background:var(--panel-alt); border:1px solid var(--line); color:var(--text-soft); font-size:12px; font-weight:600;
 }
 .souly-footer-btn:hover{ color:var(--text); border-color:var(--brand); }
+.souly-footer-btn .souly-svg-icon{ flex-shrink:0; }
+.souly-user-avatar{
+  width:26px; height:26px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,#2F8CFF,#1E63C4); color:#fff; font-size:11px; font-weight:700;
+  font-family:'Rajdhani',sans-serif; box-shadow:0 4px 10px -3px rgba(47,140,255,0.6);
+}
 .souly-footer-user{ font-size:11.5px; color:var(--text-soft); padding:0 2px; display:flex; align-items:center; gap:6px; }
 .souly-footer-user b{ color:var(--text); font-weight:700; }
 
@@ -156,6 +182,14 @@ input,textarea{ font-family:inherit; }
   padding:9px 14px; border-radius:999px; font-size:12.5px; font-weight:500;
 }
 .souly-starter-chip:hover{ border-color:var(--accent); color:var(--accent); }
+.souly-starter-chip{ display:inline-flex; align-items:center; gap:6px; }
+
+.souly-highlight-row{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:18px; padding-top:16px; border-top:1px solid var(--line); width:100%; }
+.souly-highlight-chip{
+  display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px;
+  background:var(--panel-alt); border:1px solid var(--line); font-size:11px; font-weight:600; color:var(--text-soft);
+}
+.souly-highlight-chip .souly-svg-icon{ color:var(--brand); flex-shrink:0; }
 
 .souly-msg{ display:flex; gap:10px; max-width:78%; animation:souly-fade .25s ease; }
 .souly-msg.ai{ align-self:flex-start; }
@@ -195,41 +229,6 @@ input,textarea{ font-family:inherit; }
 
 .souly-thread::-webkit-scrollbar, .souly-sidebar::-webkit-scrollbar{ width:7px; }
 .souly-thread::-webkit-scrollbar-thumb, .souly-sidebar::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.12); border-radius:10px; }
-
-/* ---------- Auth screen ---------- */
-.souly-auth{
-  width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:20px;
-  background:
-    radial-gradient(1100px 550px at 85% -10%, rgba(47,140,255,0.18), transparent 60%),
-    radial-gradient(800px 500px at -10% 110%, rgba(139,127,214,0.12), transparent 60%),
-    var(--bg);
-}
-.souly-auth-card{
-  width:100%; max-width:380px; background:var(--panel); border:1px solid var(--line); border-radius:24px;
-  padding:28px 26px 24px; box-shadow:0 30px 70px rgba(0,0,0,0.45);
-}
-.souly-auth-head{ display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:20px; }
-.souly-auth-head .souly-brand-logo-wrap{ margin-bottom:10px; }
-.souly-auth-head h1{ font-family:'Rajdhani',sans-serif; font-style:italic; font-weight:700; font-size:24px; margin:2px 0 4px; }
-.souly-auth-head p{ font-size:12.5px; color:var(--text-soft); margin:0; }
-.souly-auth-tabs{ display:flex; gap:6px; background:var(--panel-alt); padding:5px; border-radius:12px; margin-bottom:18px; border:1px solid var(--line); }
-.souly-auth-tab{ flex:1; padding:9px; border-radius:9px; font-size:12.5px; font-weight:700; color:var(--text-soft); }
-.souly-auth-tab.active{ background:linear-gradient(135deg,#2F8CFF,#1E63C4); color:#fff; }
-.souly-field{ margin-bottom:12px; }
-.souly-field label{ display:block; font-size:11.5px; font-weight:700; color:var(--text-soft); margin-bottom:6px; letter-spacing:0.02em; }
-.souly-field input{
-  width:100%; background:var(--panel-alt); border:1px solid var(--line); color:var(--text);
-  padding:11px 14px; border-radius:12px; font-size:13.5px; outline:none;
-}
-.souly-field input:focus{ border-color:var(--brand); }
-.souly-auth-error{ font-size:12px; color:#FF9DAE; background:rgba(255,92,122,0.1); border:1px solid rgba(255,92,122,0.3); padding:9px 12px; border-radius:10px; margin-bottom:12px; line-height:1.5; }
-.souly-auth-submit{
-  width:100%; padding:12px; border-radius:12px; font-size:13.5px; font-weight:700; color:#fff; margin-top:4px;
-  background:linear-gradient(135deg,#2F8CFF,#1E63C4); box-shadow:0 8px 20px -6px rgba(47,140,255,0.5);
-  display:flex; align-items:center; justify-content:center; gap:8px;
-}
-.souly-auth-submit:disabled{ opacity:0.55; }
-.souly-auth-hint{ text-align:center; font-size:11px; color:var(--text-soft); margin-top:14px; line-height:1.6; }
 
 /* ---------- Modal (Dev Info) ---------- */
 .souly-modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:40; display:flex; align-items:center; justify-content:center; padding:20px; }
@@ -279,38 +278,76 @@ input,textarea{ font-family:inherit; }
 
 const LOGO_SRC = 'logo.png';
 
+/* ---------------- Ikon SVG (pengganti emoji, gaya line-icon profesional) ---------------- */
+const ICONS = {
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  sparkles: '<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/>',
+  'cloud-rain': '<path d="M16 13v8"/><path d="M8 13v8"/><path d="M12 15v8"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/>',
+  flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  infinity: '<path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.577 0-4.577 8 0 8 5.606 0 7.644-8 12.74-8z"/>',
+  bot: '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+  menu: '<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  message: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  loader: '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>',
+  plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  heart: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+};
+function icon(name, size){
+  size = size || 16;
+  const body = ICONS[name] || '';
+  const spin = name==='loader' ? ' souly-spin' : '';
+  return `<svg class="souly-svg-icon${spin}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+}
+function hexA(hex, a){
+  hex = hex.replace('#','');
+  const r = parseInt(hex.substring(0,2),16), g = parseInt(hex.substring(2,4),16), b = parseInt(hex.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function iconBadge(name, color, size, box){
+  size = size || 16; box = box || 32;
+  return `<span class="ic-badge" style="width:${box}px;height:${box}px;background:${hexA(color,0.16)};color:${color};">${icon(name,size)}</span>`;
+}
+
 const THEMES = {
   kangen: {
-    key:'kangen', label:'Kangen', tagline:'Ruang buat rindu yang belum sempat diomongin',
-    icon:'🌙', color:'#8B7FD6',
+    key:'kangen', label:'Kangen', tagline:'Ruang buat rindu yang belum sempat diomongin', short:'Nostalgia & rindu',
+    icon:'moon', color:'#8B7FD6',
     starters:['Aku kangen masa-masa SMA dulu...','Ada seseorang yang tiba-tiba kepikiran terus','Kangen suasana rumah pas masih kecil'],
   },
   excited: {
-    key:'excited', label:'Excited', tagline:'Lagi semangat atau nunggu momen seru? Rayain di sini',
-    icon:'✨', color:'#FF9A44',
+    key:'excited', label:'Excited', tagline:'Lagi semangat atau nunggu momen seru? Rayain di sini', short:'Rayakan momen seru',
+    icon:'sparkles', color:'#FF9A44',
     starters:['Aku baru dapet kabar seru banget!','Besok ada acara yang udah aku tunggu-tunggu','Pengen cerita rencana yang bikin aku semangat'],
   },
   vent: {
-    key:'vent', label:'Luapkan Rasa', tagline:'Tempat aman buat ngeluarin semua yang numpuk',
-    icon:'🌧️', color:'#FF5C7A',
+    key:'vent', label:'Luapkan Rasa', tagline:'Tempat aman buat ngeluarin semua yang numpuk', short:'Curhat tanpa dihakimi',
+    icon:'cloud-rain', color:'#FF5C7A',
     starters:['Hari ini capek banget, rasanya numpuk semua','Aku kesel sama sesuatu tapi bingung ngomong ke siapa','Pengen luapin semua yang aku rasain sekarang'],
   },
   motivasi: {
-    key:'motivasi', label:'Motivasi', tagline:'Butuh dorongan semangat buat lanjut? Sini dulu',
-    icon:'🔥', color:'#34D399',
+    key:'motivasi', label:'Motivasi', tagline:'Butuh dorongan semangat buat lanjut? Sini dulu', short:'Semangat & dorongan',
+    icon:'flame', color:'#34D399',
     starters:['Aku lagi ngerasa down soal target aku','Rasanya pengen nyerah, butuh semangat','Aku butuh dorongan buat mulai lagi'],
   },
   semua: {
-    key:'semua', label:'Semua Tema', tagline:'Ngobrol bebas, ngalir ke mana aja',
-    icon:'♾️', color:'#2F8CFF',
+    key:'semua', label:'Semua Tema', tagline:'Ngobrol bebas, ngalir ke mana aja', short:'Bebas ke topik apa aja',
+    icon:'infinity', color:'#2F8CFF',
     starters:['Halo SoulyKGN!','Aku pengen cerita random hari ini','Temenin aku ngobrol dong'],
   },
 };
 const THEME_ORDER = ['kangen','excited','vent','motivasi','semua'];
 
 const MODES = {
-  ai:    { key:'ai', label:'AI', icon:'🤖', desc:'Rapi & jelas' },
-  human: { key:'human', label:'Human', icon:'😄', desc:'Santai kayak temen' },
+  ai:    { key:'ai', label:'AI', icon:'bot', desc:'Rapi & jelas' },
+  human: { key:'human', label:'Human', icon:'smile', desc:'Santai kayak temen' },
 };
 
 const DEV_INFO = { name:'MUHAMMAD RIZAL FEBIANSYAH', age:16, whatsapp:'6285965940576' };
@@ -325,9 +362,7 @@ function attrJson(s){
 }
 
 const State = {
-  view:'login',
-  authTab:'login',
-  authError:'', authLoading:false,
+  view:'intro',
   username:null, token:null,
   chats:[], currentId:null,
   mode:'ai',
@@ -337,8 +372,9 @@ const State = {
   devInfoOpen:false,
 };
 
-/* ---------------- Intro video (tampil sekali tiap habis login) ---------------- */
-function goToAppAfterIntro(){
+/* ---------------- Intro video (tampil setiap kali masuk aplikasi) ---------------- */
+async function goToAppAfterIntro(){
+  await ensureGuestSession();
   State.view='app';
   render();
   loadChats();
@@ -356,7 +392,10 @@ function renderIntro(){
   </div>`;
 }
 
-/* ---------------- Auth persistence ---------------- */
+/* ---------------- Sesi anonim (tanpa akun/login) ----------------
+   SoulyKGN tidak lagi mewajibkan bikin akun atau login. Setiap perangkat
+   otomatis dapat sesi tamu tersembunyi (tersimpan di localStorage) supaya
+   riwayat obrolan tetap ada selama dibuka di perangkat yang sama. */
 function loadAuthFromStorage(){
   try{
     const raw = localStorage.getItem('soulykgn_auth');
@@ -370,6 +409,21 @@ function saveAuthToStorage(username, token){
 function clearAuthStorage(){
   try{ localStorage.removeItem('soulykgn_auth'); }catch(e){}
 }
+async function ensureGuestSession(){
+  if(State.token) return;
+  const saved = loadAuthFromStorage();
+  if(saved && saved.username && saved.token){
+    State.username = saved.username; State.token = saved.token;
+    return;
+  }
+  try{
+    const data = await authFetch('/api/guest', {});
+    State.username = data.username; State.token = data.token;
+    saveAuthToStorage(data.username, data.token);
+  }catch(e){
+    console.error('Gagal membuat sesi:', e);
+  }
+}
 
 /* ---------------- API helper ---------------- */
 async function api(path, opts={}){
@@ -382,22 +436,24 @@ async function api(path, opts={}){
     throw new Error('Tidak bisa terhubung ke server. Pastikan server sedang berjalan dan kamu membuka lewat alamat http(s):// yang benar, bukan file lokal.');
   }
   if(res.status===401 && State.view==='app'){
-    doLogout(true);
-    throw new Error('Sesi berakhir, silakan login lagi');
+    clearAuthStorage();
+    State.username=null; State.token=null;
+    await ensureGuestSession();
+    throw new Error('Sesi diperbarui, coba kirim lagi ya.');
   }
   const data = await res.json().catch(()=>({}));
   if(!res.ok) throw new Error(data.error || 'Terjadi kesalahan');
   return data;
 }
 
-/* Fetch khusus untuk halaman login/daftar (belum ada token).
+/* Fetch khusus untuk membuat sesi tamu (belum ada token).
    Menerjemahkan error jaringan mentah ("Failed to fetch") jadi pesan yang jelas. */
 async function authFetch(path, body){
   let res;
   try{
     res = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
   }catch(e){
-    throw new Error('Gagal terhubung ke server (Failed to fetch). Kemungkinan: server belum jalan / masih "bangun tidur" / URL yang dibuka salah. Cek panduan di bawah tombol.');
+    throw new Error('Gagal terhubung ke server (Failed to fetch). Kemungkinan: server belum jalan / masih "bangun tidur" / URL yang dibuka salah.');
   }
   const d = await res.json().catch(()=>({}));
   if(!res.ok) throw new Error(d.error || 'Terjadi kesalahan, coba lagi.');
@@ -406,63 +462,9 @@ async function authFetch(path, body){
 
 /* ---------------- Init ---------------- */
 function init(){
-  const auth = loadAuthFromStorage();
-  if(auth && auth.username && auth.token){
-    State.username = auth.username;
-    State.token = auth.token;
-    State.view = 'app';
-    render();
-    loadChats();
-  } else {
-    render();
-  }
-}
-
-/* ---------------- Auth actions ---------------- */
-function setAuthTab(tab){ State.authTab=tab; State.authError=''; render(); }
-
-async function doRegister(){
-  const username = (document.getElementById('authUsername')||{}).value?.trim();
-  const password = (document.getElementById('authPassword')||{}).value;
-  const confirm = (document.getElementById('authConfirm')||{}).value;
-  if(!username || !password){ State.authError='Isi username dan password dulu ya'; render(); return; }
-  if(password !== confirm){ State.authError='Konfirmasi password tidak sama'; render(); return; }
-  State.authLoading=true; State.authError=''; render();
-  try{
-    const data = await authFetch('/api/register', {username,password});
-    State.username = data.username; State.token = data.token;
-    saveAuthToStorage(data.username, data.token);
-    State.view='intro'; State.authLoading=false;
-    render();
-  }catch(err){
-    State.authLoading=false; State.authError = err.message; render();
-  }
-}
-
-async function doLogin(){
-  const username = (document.getElementById('authUsername')||{}).value?.trim();
-  const password = (document.getElementById('authPassword')||{}).value;
-  if(!username || !password){ State.authError='Isi username dan password dulu ya'; render(); return; }
-  State.authLoading=true; State.authError=''; render();
-  try{
-    const data = await authFetch('/api/login', {username,password});
-    State.username = data.username; State.token = data.token;
-    saveAuthToStorage(data.username, data.token);
-    State.view='intro'; State.authLoading=false;
-    render();
-  }catch(err){
-    State.authLoading=false; State.authError = err.message; render();
-  }
-}
-
-function doLogout(silent){
-  clearAuthStorage();
-  State.username=null; State.token=null; State.chats=[]; State.currentId=null;
-  State.view='login'; State.authTab='login'; State.errorMsg='';
-  if(!silent) toastQuiet();
+  State.view = 'intro';
   render();
 }
-function toastQuiet(){ /* no-op placeholder untuk konsistensi gaya kode */ }
 
 /* ---------------- Chat data ---------------- */
 async function loadChats(){
@@ -500,6 +502,15 @@ async function deleteChat(id, ev){
   if(State.currentId===id) State.currentId = State.chats.length? State.chats[0].id : null;
   render();
   try{ await api('/api/chats/'+id, {method:'DELETE'}); }catch(err){}
+}
+
+async function clearAllChats(){
+  if(!confirm('Hapus semua riwayat obrolan di perangkat ini? Tindakan ini tidak bisa dibatalkan.')) return;
+  const ids = State.chats.map(c=>c.id);
+  State.chats = [];
+  State.currentId = null;
+  render();
+  for(const id of ids){ try{ await api('/api/chats/'+id, {method:'DELETE'}); }catch(err){} }
 }
 
 function setMode(key){ State.mode = key; render(); }
@@ -565,63 +576,30 @@ function ring(color, size, extraClass){
   return `<span class="souly-ring ${extraClass||''}" style="width:${size}px;height:${size}px;--ring-color:${color};"></span>`;
 }
 
-function renderAuth(){
-  const isLogin = State.authTab==='login';
-  return `
-  <div class="souly-auth">
-    <div class="souly-auth-card">
-      <div class="souly-auth-head">
-        <div class="souly-brand-logo-wrap">
-          ${ring('#2F8CFF',54,'')}
-          <img src="${LOGO_SRC}" alt="SoulyKGN" class="souly-brand-logo">
-        </div>
-        <h1><span class="brand-souly">souly</span><span class="brand-kgn">KGN</span></h1>
-        <p>Teman ngobrol AI, kapan aja butuh</p>
-      </div>
-      <div class="souly-auth-tabs">
-        <button class="souly-auth-tab ${isLogin?'active':''}" onclick="setAuthTab('login')">Masuk</button>
-        <button class="souly-auth-tab ${!isLogin?'active':''}" onclick="setAuthTab('register')">Daftar</button>
-      </div>
-      ${State.authError ? `<div class="souly-auth-error">${escapeHtml(State.authError)}</div>` : ''}
-      <div class="souly-field">
-        <label>Username</label>
-        <input id="authUsername" type="text" placeholder="contoh: rizal_16" autocomplete="username">
-      </div>
-      <div class="souly-field">
-        <label>Password</label>
-        <input id="authPassword" type="password" placeholder="minimal 4 karakter" autocomplete="${isLogin?'current-password':'new-password'}">
-      </div>
-      ${!isLogin ? `
-      <div class="souly-field">
-        <label>Konfirmasi Password</label>
-        <input id="authConfirm" type="password" placeholder="ulangi password" autocomplete="new-password">
-      </div>` : ''}
-      <button class="souly-auth-submit" ${State.authLoading?'disabled':''} onclick="${isLogin?'doLogin()':'doRegister()'}">
-        ${State.authLoading ? '<span class="souly-spin">⏳</span>' : ''} ${isLogin?'Masuk':'Buat Akun'}
-      </button>
-      <p class="souly-auth-hint">${isLogin ? 'Belum punya akun? Klik tab Daftar di atas.' : 'Chat kamu tersimpan otomatis ke akun ini, bisa dibuka lagi kapan aja.'}</p>
-    </div>
-  </div>`;
-}
-
 function renderSidebar(){
   const chatsHtml = State.chats.length ? State.chats.map(c=>{
     const t = THEMES[c.theme] || THEMES.semua;
     const active = c.id===State.currentId;
     return `
     <button class="souly-history-item ${active?'active':''}" style="--accent:${t.color};" onclick="selectChat('${c.id}')">
-      <span class="souly-history-icon">${t.icon}</span>
+      <span class="souly-history-icon">${icon(t.icon,14)}</span>
       <span class="souly-history-title">${escapeHtml(c.title || t.label)}</span>
-      <span class="souly-history-del" onclick="deleteChat('${c.id}', event)">🗑</span>
+      <span class="souly-history-del" onclick="deleteChat('${c.id}', event)">${icon('trash',13)}</span>
     </button>`;
   }).join('') : `<p class="souly-history-empty">Belum ada obrolan. Pilih tema di atas buat mulai.</p>`;
 
   const themeCardsHtml = THEME_ORDER.map((key,i)=>{
     const t = THEMES[key];
     const wide = i===THEME_ORDER.length-1;
-    return `
-    <button class="souly-theme-card ${wide?'wide':''}" style="--accent:${t.color};" onclick="startNewChat('${key}')">
-      <span class="ic">${t.icon}</span><span>${t.label}</span>
+    return wide ? `
+    <button class="souly-theme-card wide" style="--accent:${t.color};" onclick="startNewChat('${key}')">
+      ${iconBadge(t.icon, t.color, 17, 34)}
+      <span class="card-text"><span class="card-label">${t.label}</span><span class="card-desc">${t.short}</span></span>
+    </button>` : `
+    <button class="souly-theme-card" style="--accent:${t.color};" onclick="startNewChat('${key}')">
+      ${iconBadge(t.icon, t.color, 16, 32)}
+      <span class="card-label">${t.label}</span>
+      <span class="card-desc">${t.short}</span>
     </button>`;
   }).join('');
 
@@ -638,13 +616,17 @@ function renderSidebar(){
           <small>teman ngobrol, kapan aja</small>
         </div>
       </div>
-      <button class="souly-iconbtn souly-only-mobile" onclick="toggleSidebar(false)" aria-label="Tutup menu">✕</button>
+      <button class="souly-iconbtn souly-only-mobile" onclick="toggleSidebar(false)" aria-label="Tutup menu">${icon('x',15)}</button>
     </div>
+
+    <button class="souly-newchat-btn" onclick="startNewChat('semua')">
+      ${icon('plus',16)} Obrolan Baru
+    </button>
 
     <div class="souly-mode-toggle" role="tablist" aria-label="Mode respons">
       ${Object.values(MODES).map(m=>`
         <button class="souly-mode-btn ${State.mode===m.key?'active':''}" onclick="setMode('${m.key}')">
-          <span style="font-size:14px;">${m.icon}</span>
+          ${icon(m.icon,15)}
           <span>${m.label}<small>${m.desc}</small></span>
         </button>`).join('')}
     </div>
@@ -656,9 +638,12 @@ function renderSidebar(){
     <div class="souly-history">${chatsHtml}</div>
 
     <div class="souly-sidebar-footer">
-      <div class="souly-footer-user">Masuk sebagai <b>@${escapeHtml(State.username||'')}</b></div>
-      <button class="souly-footer-btn" onclick="toggleDevInfo(true)">ℹ️ Tentang Developer</button>
-      <button class="souly-footer-btn" onclick="doLogout()">🚪 Keluar Akun</button>
+      <div class="souly-footer-user">
+        <span class="souly-user-avatar">${icon('shield',13)}</span>
+        Riwayat tersimpan otomatis di perangkat ini
+      </div>
+      <button class="souly-footer-btn" onclick="toggleDevInfo(true)">${icon('info',14)} Tentang Developer</button>
+      ${State.chats.length ? `<button class="souly-footer-btn" onclick="clearAllChats()">${icon('trash',14)} Hapus Semua Riwayat</button>` : ''}
     </div>
   </aside>`;
 }
@@ -696,7 +681,12 @@ function renderThread(){
       <h2>Halo, aku <span class="brand-souly">souly</span><span class="brand-kgn">KGN</span></h2>
       <p>Pilih salah satu tema di sidebar, atau langsung ketik apa aja di bawah ini.</p>
       <div class="souly-starter-row">
-        ${THEME_ORDER.map(key=>{ const t=THEMES[key]; return `<button class="souly-starter-chip" style="--accent:${t.color};" onclick="startNewChat('${key}')">${t.icon} ${t.label}</button>`; }).join('')}
+        ${THEME_ORDER.map(key=>{ const t=THEMES[key]; return `<button class="souly-starter-chip" style="--accent:${t.color};" onclick="startNewChat('${key}')"><span style="color:${t.color};display:flex;">${icon(t.icon,13)}</span> ${t.label}</button>`; }).join('')}
+      </div>
+      <div class="souly-highlight-row">
+        <span class="souly-highlight-chip">${icon('shield',13)} Privat &amp; Aman</span>
+        <span class="souly-highlight-chip">${icon('zap',13)} Respons Cepat</span>
+        <span class="souly-highlight-chip">${icon('heart',13)} 4 Mood Obrolan</span>
       </div>
     </div>`;
   }
@@ -708,7 +698,7 @@ function renderThread(){
     <div class="souly-empty-state">
       <div class="souly-empty-logo-wrap">
         ${ring(theme.color,84,'')}
-        <div class="souly-empty-icon">${theme.icon}</div>
+        <div class="souly-empty-icon" style="color:${theme.color};">${icon(theme.icon,40)}</div>
       </div>
       <h2 style="color:${theme.color};">${theme.label}</h2>
       <p>${theme.tagline}</p>
@@ -730,17 +720,18 @@ function renderMain(){
   return `
   <main class="souly-main">
     <header class="souly-topbar">
-      <button class="souly-iconbtn souly-only-mobile" onclick="toggleSidebar(true)" aria-label="Buka menu">☰</button>
+      <button class="souly-iconbtn souly-only-mobile" onclick="toggleSidebar(true)" aria-label="Buka menu">${icon('menu',18)}</button>
       ${chat ? `
       <div class="souly-topbar-theme" style="--accent:${theme.color};">
-        <span class="ic">${theme.icon}</span>
+        ${iconBadge(theme.icon, theme.color, 15, 30)}
         <div><b style="color:${theme.color};">${theme.label}</b><small>${theme.tagline}</small></div>
       </div>` : `
       <div class="souly-topbar-theme" style="--accent:#2F8CFF;">
-        <span class="ic">💬</span>
+        ${iconBadge('message', '#2F8CFF', 15, 30)}
         <div><b style="color:#2F8CFF;">Mulai Obrolan</b><small>Pilih tema di sidebar buat mulai</small></div>
       </div>`}
-      <div class="souly-topbar-mode">${MODES[State.mode].icon} ${MODES[State.mode].label}</div>
+      <div class="souly-topbar-mode">${icon(MODES[State.mode].icon,13)} ${MODES[State.mode].label}</div>
+      <button class="souly-iconbtn" onclick="startNewChat('semua')" aria-label="Obrolan baru" title="Obrolan baru">${icon('plus',17)}</button>
     </header>
 
     <div class="souly-thread" id="soulyThread">${renderThread()}</div>
@@ -750,7 +741,7 @@ function renderMain(){
         placeholder="${chat ? 'Ketik sesuatu buat '+theme.label.toLowerCase()+'...' : 'Ketik apa aja, obrolan baru bakal otomatis dibuat...'}"
         onkeydown="handleComposerKeydown(event)"></textarea>
       <button type="submit" class="souly-sendbtn" style="--accent:${theme?theme.color:'#2F8CFF'};" ${State.isTyping?'disabled':''} aria-label="Kirim">
-        ${State.isTyping ? '<span class="souly-spin">⏳</span>' : '➤'}
+        ${State.isTyping ? icon('loader',18) : icon('send',18)}
       </button>
     </form>
   </main>`;
@@ -766,7 +757,7 @@ function renderDevInfoModal(){
   return `
   <div class="souly-modal-overlay" onclick="if(event.target===this) toggleDevInfo(false)">
     <div class="souly-modal">
-      <button class="souly-modal-close" onclick="toggleDevInfo(false)">✕</button>
+      <button class="souly-modal-close" onclick="toggleDevInfo(false)">${icon('x',13)}</button>
       <div class="souly-dev-avatar">
         ${ring('#7FC4FF',86,'')}
         R
@@ -775,9 +766,9 @@ function renderDevInfoModal(){
       <div class="role">Developer & Founder SoulyKGN</div>
       <div class="souly-dev-row"><span>Nama</span><span>${escapeHtml(DEV_INFO.name)}</span></div>
       <div class="souly-dev-row"><span>Umur</span><span>${DEV_INFO.age} tahun</span></div>
-      <p class="souly-dev-note">Dibuat dengan 💙 buat nemenin kamu ngobrol, kapan pun butuh — kangen, excited, curhat, atau butuh semangat.</p>
+      <p class="souly-dev-note">Dibuat dengan <span style="color:#FF5C7A;display:inline-flex;vertical-align:-2px;">${icon('heart',11)}</span> buat nemenin kamu ngobrol, kapan pun butuh — kangen, excited, curhat, atau butuh semangat.</p>
       <button class="souly-dev-whatsapp" onclick="openDevWhatsapp()">
-        <span class="ic">💬</span> Hubungi Developer via WhatsApp
+        <span class="ic">${icon('message',15)}</span> Hubungi Developer via WhatsApp
       </button>
     </div>
   </div>`;
@@ -796,7 +787,7 @@ function renderApp(){
 /* ---------------- Render root ---------------- */
 function render(){
   const root = document.getElementById('root');
-  root.innerHTML = State.view==='login' ? renderAuth() : (State.view==='intro' ? renderIntro() : renderApp());
+  root.innerHTML = State.view==='intro' ? renderIntro() : renderApp();
   const threadEl = document.getElementById('soulyThread');
   if(threadEl) threadEl.scrollTop = threadEl.scrollHeight;
 }
